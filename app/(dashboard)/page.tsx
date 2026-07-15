@@ -17,6 +17,8 @@ const toClient = (c: AlumniWithFollowUp): ClientLite => ({
   sf: c.salesforce_id,
   days: formatDaysSince(c.daysSinceDischarge),
   date: formatCivilDate(c.discharge_date),
+  // Full record for the detail modal (authed + RLS-gated, same PHI as All alumni).
+  detail: c,
 });
 
 const toReached = (r: ReachedRecently): ReachedLite => ({

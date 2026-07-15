@@ -3,8 +3,11 @@
 import { useState } from "react";
 import { RevealScope } from "@/components/motion/RevealScope";
 import { Counter } from "@/components/motion/Counter";
+import { AlumniDetailModal } from "@/components/alumni/AlumniDetailModal";
+import { cardActivate } from "@/lib/cardActivate";
+import type { AlumniDetail } from "@/lib/types";
 
-export type ClientLite = { id: string; name: string; sf: string; days: string; date: string };
+export type ClientLite = { id: string; name: string; sf: string; days: string; date: string; detail: AlumniDetail };
 export type GroupLite = { group: string; clients: ClientLite[] };
 export type ReachedLite = ClientLite & { group: string; daysAgo: number };
 
@@ -40,9 +43,13 @@ function Header({ todayLabel }: { todayLabel: string }) {
   );
 }
 
-function ClientCard({ c }: { c: ClientLite }) {
+function ClientCard({ c, onOpen }: { c: ClientLite; onOpen: (a: AlumniDetail) => void }) {
   return (
-    <article className="ccard">
+    <div
+      className="ccard clickable"
+      aria-label={`View details for ${c.name}`}
+      {...cardActivate(() => onOpen(c.detail))}
+    >
       <div className="rec-mono" aria-hidden="true">{initials(c.name)}</div>
       <div className="cbody">
         <div className="ctop">
@@ -53,12 +60,14 @@ function ClientCard({ c }: { c: ClientLite }) {
           <span className="num">{c.days}</span> since discharge · Discharged {c.date}
         </div>
       </div>
-    </article>
+    </div>
   );
 }
 
 export function DueTodayView(data: DueTodayData) {
   const { todayLabel, totalDue, reachedCount, totalAlumni, activeMilestones, groups, reached, windowDays } = data;
+
+  const [selected, setSelected] = useState<AlumniDetail | null>(null);
 
   const [open, setOpen] = useState<Set<string>>(() => {
     const s = new Set<string>();
@@ -124,7 +133,11 @@ export function DueTodayView(data: DueTodayData) {
           ) : (
             reached.map((r) => (
               <li key={r.id}>
-                <div className="furow">
+                <div
+                  className="furow clickable"
+                  aria-label={`View details for ${r.name}`}
+                  {...cardActivate(() => setSelected(r.detail))}
+                >
                   <div className="fu-main">
                     <span className="fu-name">{r.name}</span>
                     <span className="fu-sf mono">{r.sf}</span>
@@ -234,7 +247,7 @@ export function DueTodayView(data: DueTodayData) {
                   <div className="msec-inner">
                     <div className="client-grid">
                       {g.clients.map((c) => (
-                        <ClientCard key={c.id} c={c} />
+                        <ClientCard key={c.id} c={c} onOpen={setSelected} />
                       ))}
                     </div>
                   </div>
@@ -247,6 +260,8 @@ export function DueTodayView(data: DueTodayData) {
 
       <div className="section-gap" />
       {reachedList}
+
+      <AlumniDetailModal alumni={selected} onClose={() => setSelected(null)} />
     </RevealScope>
   );
 }

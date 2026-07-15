@@ -27,7 +27,31 @@ describe("DueTodayView (real frontend, data-driven)", () => {
 
   it("renders hero, timeline and section cards when populated", () => {
     const groups: GroupLite[] = [
-      { group: "Day 3", clients: [{ id: "1", name: "Jordan Rivera", sf: "SF-001", days: "3 days", date: "Jul 12, 2026" }] },
+      {
+        group: "Day 3",
+        clients: [
+          {
+            id: "1",
+            name: "Jordan Rivera",
+            sf: "SF-001",
+            days: "3 days",
+            date: "Jul 12, 2026",
+            detail: {
+              id: "1",
+              salesforce_id: "SF-001",
+              full_name: "Jordan Rivera",
+              email: null,
+              phone_number: null,
+              discharge_date: "2026-07-12",
+              status: null,
+              created_at: "2026-07-12T00:00:00Z",
+              updated_at: "2026-07-12T00:00:00Z",
+              daysSinceDischarge: 3,
+              group: "Day 3",
+            },
+          },
+        ],
+      },
       { group: "Post 90", clients: [] },
     ];
     const html = renderToStaticMarkup(

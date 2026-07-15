@@ -35,6 +35,16 @@ export interface ReachedRecently extends Alumni {
   daysAgo: number;
 }
 
+/**
+ * Everything the record-detail modal renders. Both `AlumniWithFollowUp`
+ * (All alumni) and `ReachedRecently` (Due today) structurally satisfy it, so a
+ * single modal serves both lists.
+ */
+export type AlumniDetail = Alumni & {
+  daysSinceDischarge?: number | null;
+  group?: FollowUpGroup | null;
+};
+
 /* ---- All Alumni query params (URL-state) ---- */
 
 export const SORT_FIELDS = [

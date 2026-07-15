@@ -23,7 +23,7 @@ import {
   buildDueDateSet,
   buildReachedWindowSet,
 } from "@/lib/followup/dueQuery";
-import { formatCivilDate, formatDaysSince } from "@/lib/followup/format";
+import { formatCivilDate, formatDaysSince, formatTimestamp } from "@/lib/followup/format";
 
 describe("getTodayNY (the single clock read)", () => {
   it("resolves the NY civil date, not the UTC date, late in the evening (EDT)", () => {
@@ -230,5 +230,14 @@ describe("formatting", () => {
     expect(formatDaysSince(30)).toBe("30 days");
     expect(formatDaysSince(-2)).toBe("in 2 days");
     expect(formatDaysSince(null)).toBe("—");
+  });
+  it("formats ISO timestamps in America/New_York, — for invalid", () => {
+    // 2026-07-14T22:52:29Z == 6:52 PM EDT (America/New_York, -4)
+    const s = formatTimestamp("2026-07-14T22:52:29.100Z");
+    expect(s).toContain("Jul 14, 2026");
+    expect(s).toMatch(/6:52/);
+    expect(s).toMatch(/PM/);
+    expect(formatTimestamp(null)).toBe("—");
+    expect(formatTimestamp("not-a-date")).toBe("—");
   });
 });
