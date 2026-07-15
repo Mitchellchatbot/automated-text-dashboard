@@ -6,7 +6,7 @@ import { ThemeToggle } from "@/components/system/ThemeToggle";
 import { SignOutButton } from "@/components/system/SignOutButton";
 import { AutoRefresh } from "@/components/system/Refreshers";
 import { MotionInit } from "@/components/motion/MotionInit";
-import { DotField } from "@/components/background/DotField";
+import { CursorGrid } from "@/components/background/CursorGrid";
 import { EmptyState } from "@/components/ui/EmptyState";
 
 export default async function DashboardLayout({
@@ -22,7 +22,7 @@ export default async function DashboardLayout({
 
   return (
     <>
-      <DotField />
+      <CursorGrid />
       <MotionInit />
       <AutoRefresh />
       <header className="topbar">

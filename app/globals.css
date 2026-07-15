@@ -253,8 +253,8 @@ h1, .h1 { font-size: clamp(1.9rem, 1.5rem + 1.7vw, 2.4rem); font-weight: 600; le
 @keyframes shimmer { to { background-position: -220% 0; } }
 .sk-card { background: var(--surface); border: 1px solid var(--hair); border-radius: 18px; box-shadow: var(--shadow-sm); }
 
-/* ---------- DotField background ---------- */
-#dotfield { position: fixed; inset: 0; z-index: -1; pointer-events: none; }
+/* ---------- Cursor grid background ---------- */
+#cursorgrid { position: fixed; inset: 0; z-index: -1; pointer-events: none; }
 
 /* ---------- GlareHover ---------- */
 .stat-mini, .msec, .ccard { position: relative; overflow: hidden; }
