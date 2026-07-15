@@ -1,0 +1,5 @@
+# Supabase local artifacts — must never be committed. `.temp/` holds the linked
+# project ref and the Postgres pooler connection string.
+.branches
+.temp
+.env
