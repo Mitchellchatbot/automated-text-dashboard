@@ -7,8 +7,8 @@ const geistSans = Geist({ variable: "--font-geist-sans", subsets: ["latin"] });
 const geistMono = Geist_Mono({ variable: "--font-geist-mono", subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Villa Alumni Follow-up Dashboard",
-  description: "Discharged-client follow-up scheduling for Villa staff.",
+  title: "Follow up Dashboard",
+  description: "Discharged-client follow-up scheduling for staff.",
 };
 
 export default async function RootLayout({

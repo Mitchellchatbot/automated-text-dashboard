@@ -59,7 +59,7 @@ export default function LoginPage() {
             </svg>
           </span>
           <div>
-            <h1 style={{ margin: 0, fontSize: 18, fontWeight: 600, letterSpacing: "-0.02em" }}>Villa Alumni</h1>
+            <h1 style={{ margin: 0, fontSize: 18, fontWeight: 600, letterSpacing: "-0.02em" }}>Follow up Dashboard</h1>
             <p className="lead" style={{ margin: 0, fontSize: 12.5 }}>Follow-up care · staff sign-in</p>
           </div>
         </div>
@@ -80,7 +80,7 @@ export default function LoginPage() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 className="field"
-                placeholder="you@villa.org"
+                placeholder="you@example.com"
               />
             </div>
 

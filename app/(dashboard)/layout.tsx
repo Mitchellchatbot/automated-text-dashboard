@@ -33,7 +33,7 @@ export default async function DashboardLayout({
                 <path d="M10 17s-6-3.8-6-8a3.4 3.4 0 0 1 6-2 3.4 3.4 0 0 1 6 2c0 4.2-6 8-6 8z" />
               </svg>
             </span>
-            Villa Alumni
+            Follow up Dashboard
           </span>
           <NavTabs />
           <div className="top-right">
