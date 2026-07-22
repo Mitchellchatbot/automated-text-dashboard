@@ -7,11 +7,16 @@ import { useEffect, useRef } from "react";
 const LINKS = [
   { href: "/", label: "Due today" },
   { href: "/alumni", label: "All alumni" },
+  { href: "/settings", label: "Template" },
 ];
 
 export function NavTabs() {
   const pathname = usePathname();
-  const activeHref = pathname.startsWith("/alumni") ? "/alumni" : "/";
+  const activeHref = pathname.startsWith("/alumni")
+    ? "/alumni"
+    : pathname.startsWith("/settings")
+      ? "/settings"
+      : "/";
   const navRef = useRef<HTMLElement>(null);
   const indRef = useRef<HTMLSpanElement>(null);
 
