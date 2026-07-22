@@ -383,6 +383,13 @@ allow_dynamic_registration = false
 enabled = true
 verify_jwt = false
 
+# The Blooio inbound webhook (delivery status + STOP/START replies) is a public
+# endpoint; Blooio can't present a Supabase JWT, so JWT verification is disabled
+# and the function verifies Blooio's HMAC-SHA256 signature instead.
+[functions.blooio-webhook]
+enabled = true
+verify_jwt = false
+
 [edge_runtime]
 enabled = true
 # Supported request policies: `oneshot`, `per_worker`.

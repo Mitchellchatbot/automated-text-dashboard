@@ -10,8 +10,23 @@ import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { sendBlooioText } from "@/lib/blooio";
 import { renderTemplate, templateVars } from "@/lib/messaging/template";
+import { toE164 } from "@/lib/messaging/phone";
 
 const SEE_OFF = "see_off";
+
+/** True if this E.164 number is on the opt-out list. */
+async function isSuppressed(
+  supabase: Awaited<ReturnType<typeof createClient>>,
+  e164: string | null,
+): Promise<boolean> {
+  if (!e164) return false;
+  const { data } = await supabase
+    .from("message_suppressions")
+    .select("opted_out")
+    .eq("phone_number", e164)
+    .maybeSingle();
+  return Boolean(data?.opted_out);
+}
 
 export interface SendResult {
   ok: boolean;
@@ -37,6 +52,12 @@ export async function sendSeeOffAction(salesforceId: string): Promise<SendResult
   if (!lead) return { ok: false, status: "failed", message: "That record no longer exists." };
   if (lead.sms_opt_out) {
     return { ok: false, status: "opted_out", message: "This person has opted out of texts." };
+  }
+
+  // Phone-keyed opt-out is the authoritative TCPA check (a number can outlive a lead).
+  const e164 = toE164(lead.phone_number);
+  if (await isSuppressed(supabase, e164)) {
+    return { ok: false, status: "opted_out", message: "This number has opted out (replied STOP)." };
   }
 
   // Already sent (any non-failed row)? Don't double-text.
@@ -94,10 +115,20 @@ export interface SeeOffStatus {
   status: string | null; // null = never attempted
   sentAt?: string;
   error?: string | null;
+  optedOut: boolean;
 }
 
 export async function getSeeOffStatusAction(salesforceId: string): Promise<SeeOffStatus> {
   const supabase = await createClient();
+
+  const { data: lead } = await supabase
+    .from("villa_alumni")
+    .select("phone_number, sms_opt_out")
+    .eq("salesforce_id", salesforceId)
+    .maybeSingle();
+  const optedOut =
+    Boolean(lead?.sms_opt_out) || (await isSuppressed(supabase, toE164(lead?.phone_number ?? null)));
+
   const { data } = await supabase
     .from("message_log")
     .select("status, created_at, error")
@@ -106,7 +137,47 @@ export async function getSeeOffStatusAction(salesforceId: string): Promise<SeeOf
     .order("created_at", { ascending: false })
     .limit(1);
   const row = data?.[0] as { status: string; created_at: string; error: string | null } | undefined;
-  return row ? { status: row.status, sentAt: row.created_at, error: row.error } : { status: null };
+  return row
+    ? { status: row.status, sentAt: row.created_at, error: row.error, optedOut }
+    : { status: null, optedOut };
+}
+
+/** Manual opt-out / reactivate for a lead's phone (verbal STOP, staff correction). */
+export async function setOptOutAction(
+  salesforceId: string,
+  optOut: boolean,
+): Promise<{ ok: boolean; message: string }> {
+  const supabase = await createClient();
+
+  const { data: lead, error } = await supabase
+    .from("villa_alumni")
+    .select("phone_number")
+    .eq("salesforce_id", salesforceId)
+    .maybeSingle();
+  if (error) return { ok: false, message: error.message };
+  const e164 = toE164(lead?.phone_number ?? null);
+  if (!e164) return { ok: false, message: "No usable phone number on file for this person." };
+
+  const { error: upErr } = await supabase.from("message_suppressions").upsert(
+    {
+      phone_number: e164,
+      opted_out: optOut,
+      reason: "manual",
+      source: "manual",
+    },
+    { onConflict: "phone_number" },
+  );
+  if (upErr) return { ok: false, message: upErr.message };
+
+  // Mirror onto the lead flag for at-a-glance visibility (phone list stays authoritative).
+  await supabase.from("villa_alumni").update({ sms_opt_out: optOut }).eq("salesforce_id", salesforceId);
+
+  revalidatePath("/");
+  revalidatePath("/alumni");
+  return {
+    ok: true,
+    message: optOut ? "Marked opted out — no texts will be sent." : "Reactivated — texts allowed again.",
+  };
 }
 
 export async function updateTemplateAction(body: string): Promise<{ ok: boolean; message: string }> {
