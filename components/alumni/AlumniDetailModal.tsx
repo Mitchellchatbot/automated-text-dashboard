@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { StatusBadge } from "@/components/ui/StatusBadge";
+import { SeeOffControls } from "@/components/messaging/SeeOffControls";
 import { initials } from "@/lib/initials";
 import { formatCivilDate, formatDaysSince, formatTimestamp } from "@/lib/followup";
 import type { AlumniDetail } from "@/lib/types";
@@ -186,6 +187,8 @@ export function AlumniDetailModal({
             <dd>{formatTimestamp(alumni.updated_at)}</dd>
           </div>
         </dl>
+
+        <SeeOffControls salesforceId={alumni.salesforce_id} phoneNumber={alumni.phone_number} />
       </div>
     </div>
   );
