@@ -40,7 +40,7 @@ function decorate(row: Alumni, today: CivilDate): AlumniWithFollowUp {
 /** MIN discharge date — bounds the (otherwise unbounded) post-90 tail. */
 async function getMinDischarge(supabase: Supabase): Promise<CivilDate | null> {
   const { data, error } = await supabase
-    .from("villa_alumni")
+    .from("alumni")
     .select("discharge_date")
     .not("discharge_date", "is", null)
     .order("discharge_date", { ascending: true })
@@ -53,7 +53,7 @@ async function getMinDischarge(supabase: Supabase): Promise<CivilDate | null> {
 export async function getDistinctStatuses(): Promise<string[]> {
   const supabase = await createClient();
   const { data, error } = await supabase
-    .from("villa_alumni")
+    .from("alumni")
     .select("status")
     .not("status", "is", null);
   if (error) throw error;
@@ -68,7 +68,7 @@ export async function getDistinctStatuses(): Promise<string[]> {
 export async function getAlumniCount(): Promise<number> {
   const supabase = await createClient();
   const { count, error } = await supabase
-    .from("villa_alumni")
+    .from("alumni")
     .select("*", { count: "exact", head: true });
   if (error) throw error;
   return count ?? 0;
@@ -93,7 +93,7 @@ export async function getDueToday(): Promise<DueTodayResult> {
   const dates = buildDueDateSet(today, min);
 
   const { data, error } = await supabase
-    .from("villa_alumni")
+    .from("alumni")
     .select(COLUMNS)
     .in("discharge_date", dates);
   if (error) throw error;
@@ -137,7 +137,7 @@ export async function getReachedRecently(
   if (dates.length === 0) return [];
 
   const { data, error } = await supabase
-    .from("villa_alumni")
+    .from("alumni")
     .select(COLUMNS)
     .in("discharge_date", dates);
   if (error) throw error;
@@ -181,7 +181,7 @@ export async function getAllAlumni(query: AlumniQuery): Promise<AllAlumniResult>
   const supabase = await createClient();
   const today = getTodayNY();
 
-  let q = supabase.from("villa_alumni").select(COLUMNS, { count: "exact" });
+  let q = supabase.from("alumni").select(COLUMNS, { count: "exact" });
 
   const term = sanitizeSearch(query.search);
   if (term) {
