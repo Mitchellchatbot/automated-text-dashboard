@@ -2,7 +2,7 @@
  * Supabase Edge Function: salesforce-webhook
  *
  * Receives the daily bulk POST of discharged clients from Zapier and upserts
- * them into villa_alumni. Public endpoint (verify_jwt = false) protected by a
+ * them into the alumni table. Public endpoint (verify_jwt = false) protected by a
  * shared secret. Uses the service_role key (auto-injected) so it bypasses RLS.
  *
  * Deploy:  supabase functions deploy salesforce-webhook --no-verify-jwt
@@ -152,7 +152,7 @@ Deno.serve(async (req: Request): Promise<Response> => {
 
   for (let i = 0; i < batch.records.length; i += CHUNK_SIZE) {
     const chunk: NormalizedRecord[] = batch.records.slice(i, i + CHUNK_SIZE);
-    const { data, error } = await supabase.rpc("upsert_villa_alumni", {
+    const { data, error } = await supabase.rpc("upsert_alumni", {
       p_records: chunk,
     });
     if (error) {

@@ -44,7 +44,7 @@ export async function sendSeeOffAction(salesforceId: string): Promise<SendResult
 
   // Load the lead (RLS: allowlisted staff only).
   const { data: lead, error: leadErr } = await supabase
-    .from("villa_alumni")
+    .from("alumni")
     .select("salesforce_id, full_name, phone_number, sms_opt_out")
     .eq("salesforce_id", salesforceId)
     .maybeSingle();

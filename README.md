@@ -18,7 +18,7 @@ Salesforce ──daily──▶ Zapier (Custom Request, POST + X-Webhook-Secret)
 Supabase Edge Function  salesforce-webhook   (Deno, verify_jwt=false, service_role)
       │   validate → normalize → dedupe → bulk UPSERT on salesforce_id
       ▼
-Supabase Postgres   table villa_alumni   (RLS: staff read only)
+Supabase Postgres   table alumni   (RLS: staff read only)
       ▲
       │ reads (authenticated, is_staff())
 Next.js dashboard (Railway)  — computes days-since + due groups in TypeScript
@@ -136,7 +136,7 @@ magic-link sign-in redirects correctly.
 
 ## Security model
 
-- Row Level Security on `villa_alumni`; only allowlisted, authenticated staff can
+- Row Level Security on `alumni`; only allowlisted, authenticated staff can
   read (via a `SECURITY DEFINER` `is_staff()` function). Only the service_role
   (webhook) writes.
 - Webhook protected by a constant-time shared-secret check; body size capped.

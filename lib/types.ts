@@ -6,7 +6,7 @@ import type { FollowUpGroup } from "@/lib/followup/schedule";
  */
 export type AlumniStatus = string;
 
-/** A row of the `villa_alumni` table. */
+/** A row of the `alumni` table. */
 export interface Alumni {
   id: string;
   salesforce_id: string;
